@@ -11,7 +11,13 @@ namespace BinaryTrees {
 		}
 	}
 	public class BinarySearchTree<Type> where Type : IComparable {
+		public IComparer comp = null;
 		public Node<Type> root;
+		public BinarySearchTree() {
+		}
+		public BinarySearchTree(IComparer custom ) {
+			comp = custom;
+		}
 		public void Add(Type value) {
 			Add (value, this.root);
 		}
@@ -20,7 +26,12 @@ namespace BinaryTrees {
 				this.root = new Node<Type> (value);
 				return;
 			}
-			int test = Convert.ToInt32 (value.CompareTo(node.value) > 0);
+			int test;
+			if (comp != null) {
+				test = Convert.ToInt32 (comp.Compare (value, node.value) > 0);
+			} else {
+				test = Convert.ToInt32 (value.CompareTo (node.value) > 0);
+			}
 			if ( node.nodes [test] == null ) {
 				node.nodes [test] = new Node<Type> (value);
 				return;
@@ -36,41 +47,47 @@ namespace BinaryTrees {
 			}
 			return Contains( value, node.nodes[Convert.ToInt32(value.CompareTo(node.value) > 0)] );
 		}
-		public void TraversePre( Action< Node<Type> > method ) {
-			TraversePre (method, this.root);
+		public string TraversePre( Action< Node<Type> > method ) {
+			return TraversePre (method, this.root);
 		}
-		public void TraversePre( Action< Node<Type> > method, Node<Type> node ) {
+		public string TraversePre( Action< Node<Type> > method, Node<Type> node, string str = "" ) {
 			method (node);
+			str += node.value.ToString () + " ";
 			if (node.nodes [0] != null) {
-				TraversePre (method, node.nodes [0]);
+				str = TraversePre (method, node.nodes [0], str);
 			}
 			if (node.nodes [1] != null) {
-				TraversePre (method, node.nodes [1]);
+				str = TraversePre (method, node.nodes [1], str);
 			}
+			return str;
 		}
-		public void TraverseInOrder( Action< Node<Type> > method ) {
-			TraverseInOrder (method, this.root);
+		public string TraverseInOrder( Action< Node<Type> > method ) {
+			return TraverseInOrder (method, this.root);
 		}
-		public void TraverseInOrder( Action< Node<Type> > method, Node<Type> node ) {
+		public string TraverseInOrder( Action< Node<Type> > method, Node<Type> node, string str = "" ) {
 			if (node.nodes [0] != null) {
-				TraverseInOrder (method, node.nodes [0]);
+				str = TraverseInOrder (method, node.nodes [0], str);
 			}
 			method (node);
+			str += node.value.ToString() + " ";
 			if (node.nodes [1] != null) {
-				TraverseInOrder (method, node.nodes [1]);
+				str = TraverseInOrder (method, node.nodes [1], str);
 			}
+			return str;
 		}
-		public void TraversePost( Action< Node<Type> > method ) {
-			TraversePost (method, this.root);
+		public string TraversePost( Action< Node<Type> > method ) {
+			return TraversePost (method, this.root);
 		}
-		public void TraversePost( Action< Node<Type> > method, Node<Type> node ) {
+		public string TraversePost( Action< Node<Type> > method, Node<Type> node, string str = "" ) {
 			if (node.nodes [0] != null) {
-				TraverseInOrder (method, node.nodes [0]);
+				str = TraverseInOrder (method, node.nodes [0], str);
 			}
 			if (node.nodes [1] != null) {
-				TraverseInOrder (method, node.nodes [1]);
+				str = TraverseInOrder (method, node.nodes [1], str);
 			}
 			method (node);
+			str += node.value.ToString () + " ";
+			return str;
 		}
 	}
 }

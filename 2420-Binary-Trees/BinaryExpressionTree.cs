@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Collections;
 
 namespace BinaryTrees {
-	public class BinaryExpressionTree {
-		BinarySearchTree<int> tree = new BinarySearchTree<int>();
-		Stack<Node<int>> ops = new Stack<Node<int>> ();
-		Stack<Node<int>> operands = new Stack<Node<int>> ();
+	public class BinaryExpressionTree : BinarySearchTree<double> {
+		Stack<Node<double>> ops = new Stack<Node<double>> ();
+		Stack<Node<double>> operands = new Stack<Node<double>> ();
 		public BinaryExpressionTree( string expression ) {
 			bool isOp = false;
 			foreach (string foo in expression.Split ()) {
 				if (!isOp) {
-					Node<int> node = new Node<int> (Int32.Parse(foo));
+					Node<double> node = new Node<double> (Double.Parse(foo));
 					operands.Push (node);
 				} else {
-					Node<int> node = new Node<int> (foo.ToCharArray()[0]);
+					Node<double> node = new Node<double> (foo.ToCharArray()[0]);
 					while (ops.Count != 0 && !IsWorthy (node, ops.Peek ())) {
 						Combine (operands, ops);
 					}
@@ -25,13 +24,13 @@ namespace BinaryTrees {
 			while (ops.Count != 0) {
 				Combine (operands, ops);
 			}
-			tree.root = operands.Pop ();
+			root = operands.Pop ();
 		}
-		private bool IsWorthy( Node<int> a, Node<int> b ) {
+		private bool IsWorthy( Node<double> a, Node<double> b ) {
 			return GetPriority(a.value) > GetPriority(b.value);
 		}
-		private int GetPriority( int value ) {
-			switch( value ) {
+		private int GetPriority( double value ) {
+			switch( (int)value ) {
 			case 43:
 			case 45:
 				return 0;
@@ -41,20 +40,20 @@ namespace BinaryTrees {
 			}
 			return 0;
 		}
-		private void Combine( Stack<Node<int>> operands, Stack<Node<int>> ops ) {
-			Node<int> root = ops.Pop ();
+		private void Combine( Stack<Node<double>> operands, Stack<Node<double>> ops ) {
+			Node<double> root = ops.Pop ();
 			root.nodes[0] = operands.Pop ();
 			root.nodes[1] = operands.Pop ();
 			operands.Push (root);
 		}
-		public int Eval() {
-			return Eval (tree.root);
+		public double Eval() {
+			return Eval (root);
 		}
-		public int Eval( Node<int> node ) {
+		public double Eval( Node<double> node ) {
 			if (node.nodes [0] == null && node.nodes [1] == null) {
 				return node.value;
 			} else {
-				switch (node.value) {
+				switch ((int)node.value) {
 				case 43:
 					return Eval(node.nodes [1]) + Eval(node.nodes [0]);
 				case 45:
